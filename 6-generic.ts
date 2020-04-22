@@ -37,3 +37,23 @@ function getData2<T>(value:T):T{
 }
 
 getData2<string>('aa');
+
+
+class MysqlDb<T>{
+    add(info:T):boolean{
+        console.log(info);
+        return true;
+    }
+}
+
+class User{
+    username:string | undefined;
+    password:string | undefined;
+} 
+
+var u = new User();
+u.username = 'a';
+u.password = 'b';
+var Db = new MysqlDb<User>();
+// Db.add('123');
+Db.add(u);
