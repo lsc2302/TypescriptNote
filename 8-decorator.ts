@@ -95,3 +95,31 @@ class HttpClient3{
 var http3:any = new HttpClient3();
 console.log(http3.apiUrl);
 
+//method decorator
+function logMethod(params:any){
+    //target: constructor for static, prototype for instance
+    //methodName: name of method
+    //desc:description
+    return function(target:any, methodName:any, desc:any){
+        console.log(target);
+        console.log(methodName);
+        console.log(desc);
+        target.run= function(){
+            console.log('run');
+        }
+    }
+}
+class HttpClient4{
+    public apiUrl:string |undefined;
+    constructor(){
+
+    }
+    @logMethod("bbb")
+    getData(){
+
+    }
+}
+var http4:any = new HttpClient4();
+http4.run();
+
+

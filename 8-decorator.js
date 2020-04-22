@@ -111,3 +111,29 @@ var HttpClient3 = /** @class */ (function () {
 }());
 var http3 = new HttpClient3();
 console.log(http3.apiUrl);
+//method decorator
+function logMethod(params) {
+    //target: constructor for static, prototype for instance
+    //methodName: name of method
+    //desc:description
+    return function (target, methodName, desc) {
+        console.log(target);
+        console.log(methodName);
+        console.log(desc);
+        target.run = function () {
+            console.log('run');
+        };
+    };
+}
+var HttpClient4 = /** @class */ (function () {
+    function HttpClient4() {
+    }
+    HttpClient4.prototype.getData = function () {
+    };
+    __decorate([
+        logMethod("bbb")
+    ], HttpClient4.prototype, "getData", null);
+    return HttpClient4;
+}());
+var http4 = new HttpClient4();
+http4.run();
