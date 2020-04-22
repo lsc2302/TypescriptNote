@@ -1,4 +1,5 @@
 //class decorator
+console.log("**************************log class *****************************")
 function logClass(params:any){
      console.log(params);
      params.prototype.url = "property";
@@ -23,8 +24,8 @@ http.run();
 
 function logClass1(params:any){
     return function(target:any){
-        console.log(target);
         console.log(params);
+        console.log(target);
         target.prototype.url = "modified";
         target.prototype.run = function(){
          console.log("run");
@@ -73,6 +74,7 @@ var http2:any = new HttpClient2();
 console.log(http2.url);
 
 //property decorator
+console.log("**************************log property *****************************")
 function logProperty(params:any){
     //target: constructor for static, prototype for instance
     //attr: name of property
@@ -95,7 +97,9 @@ class HttpClient3{
 var http3:any = new HttpClient3();
 console.log(http3.apiUrl);
 
+
 //method decorator
+console.log("**************************log method *****************************")
 function logMethod(params:any){
     //target: constructor for static, prototype for instance
     //methodName: name of method
@@ -107,6 +111,14 @@ function logMethod(params:any){
         target.run= function(){
             console.log('run');
         }
+
+        var oMethod = desc.value;
+        desc.value = function(...args:any){
+            args = args.map((value:any)=> {
+                return String(value)
+            })
+            oMethod.apply(this, args);
+        }
     }
 }
 class HttpClient4{
@@ -115,11 +127,41 @@ class HttpClient4{
 
     }
     @logMethod("bbb")
-    getData(){
-
+    getData(...args:any[]){
+        console.log("original method");
     }
 }
 var http4:any = new HttpClient4();
 http4.run();
+http4.getData();
 
+//log params
+console.log("**************************log params *****************************")
+function logParams(params:any){
+    //target: constructor for static, prototype for instance
+    //methodName: name of method
+    //desc:description
+    return function(target:any, methodName:any, paramsIndex:any){
+        console.log(params);
+        console.log(target);
+        console.log(methodName);
+        console.log(paramsIndex);
+    }
+}
+
+class HttpClient5{
+    public apiUrl:string |undefined;
+    constructor(){
+
+    }
+    getData(@logParams('uuid')uuid:any ){
+        console.log("original method" + uuid);
+    }
+}
+var http5:any = new HttpClient5();
+http5.getData("cccc");
+
+//decorators sequence
+//property>method>params>class
+//same priority, last > front
 

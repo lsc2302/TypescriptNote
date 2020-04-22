@@ -18,7 +18,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 //class decorator
+console.log("**************************log class *****************************");
 function logClass(params) {
     console.log(params);
     params.prototype.url = "property";
@@ -41,8 +45,8 @@ console.log(http.url);
 http.run();
 function logClass1(params) {
     return function (target) {
-        console.log(target);
         console.log(params);
+        console.log(target);
         target.prototype.url = "modified";
         target.prototype.run = function () {
             console.log("run");
@@ -90,6 +94,7 @@ var HttpClient2 = /** @class */ (function () {
 var http2 = new HttpClient2();
 console.log(http2.url);
 //property decorator
+console.log("**************************log property *****************************");
 function logProperty(params) {
     //target: constructor for static, prototype for instance
     //attr: name of property
@@ -112,6 +117,7 @@ var HttpClient3 = /** @class */ (function () {
 var http3 = new HttpClient3();
 console.log(http3.apiUrl);
 //method decorator
+console.log("**************************log method *****************************");
 function logMethod(params) {
     //target: constructor for static, prototype for instance
     //methodName: name of method
@@ -123,12 +129,28 @@ function logMethod(params) {
         target.run = function () {
             console.log('run');
         };
+        var oMethod = desc.value;
+        desc.value = function () {
+            var args = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                args[_i] = arguments[_i];
+            }
+            args = args.map(function (value) {
+                return String(value);
+            });
+            oMethod.apply(this, args);
+        };
     };
 }
 var HttpClient4 = /** @class */ (function () {
     function HttpClient4() {
     }
     HttpClient4.prototype.getData = function () {
+        var args = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            args[_i] = arguments[_i];
+        }
+        console.log("original method");
     };
     __decorate([
         logMethod("bbb")
@@ -137,3 +159,33 @@ var HttpClient4 = /** @class */ (function () {
 }());
 var http4 = new HttpClient4();
 http4.run();
+http4.getData();
+//log params
+console.log("**************************log params *****************************");
+function logParams(params) {
+    //target: constructor for static, prototype for instance
+    //methodName: name of method
+    //desc:description
+    return function (target, methodName, paramsIndex) {
+        console.log(params);
+        console.log(target);
+        console.log(methodName);
+        console.log(paramsIndex);
+    };
+}
+var HttpClient5 = /** @class */ (function () {
+    function HttpClient5() {
+    }
+    HttpClient5.prototype.getData = function (uuid) {
+        console.log("original method" + uuid);
+    };
+    __decorate([
+        __param(0, logParams('uuid'))
+    ], HttpClient5.prototype, "getData", null);
+    return HttpClient5;
+}());
+var http5 = new HttpClient5();
+http5.getData("cccc");
+//decorators sequence
+//property>method>params>class
+//same priority, last > front
